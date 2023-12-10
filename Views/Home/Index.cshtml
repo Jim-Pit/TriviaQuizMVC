@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model Quiz
+
+@using static TriviaQuizMVC.Models.Enums
+@using TriviaQuizMVC.Controllers
+
+@*<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>*@
+
+@* INSTEAD OF ITERATING THROUGH ALL QUIZ-ITEMS GET ONLY CURRENTLY-ACTIVE QUIZ-ITEM *@
+@foreach (var q in Model.Questions ?? Enumerable.Empty<QuizItem>())
+{
+    if (!q.CurrentActive)
+        continue;
+    @await Html.PartialAsync("_QuizQuestion", q)
+}
+
+<div class="navigation text-center">
+    <a class="btn btn-primary" title="prev"
+       href="@Url.Action("NavigateTo","Home", new { currentQuestionJSON = BaseController<HomeController>.Serialize(Model.CurrentlyActive), goTo = (int)NavigateTo.Previous })">
+        <text><</text>
+    </a>
+    <a class="btn btn-primary" title="next"
+       href="@Url.Action("NavigateTo","Home", new { currentQuestionJSON = BaseController<HomeController>.Serialize(Model.CurrentlyActive), goTo = (int)NavigateTo.Next })">
+        <text>></text>
+    </a>
+</div>
+
+@if (Model.SubmitAvailable)
+{
+    <a class="btn btn-primary btn-success" title="submit"
+       href="@Url.Action("Index","Score")">
+            Check Answers
+    </a>
+}

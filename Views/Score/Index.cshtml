@@ -1,0 +1,42 @@
+﻿@{
+    var score = ViewData[nameof(Quiz.Score)];
+}
+@model Quiz
+
+@*<h1>You guessed @score Questions right</h1>*@
+@if(Model.Score >= 0)
+{
+    <h1>You guessed @Model.Score Questions right</h1>
+}
+
+@foreach(var item in @Model.Questions ?? Enumerable.Empty<QuizItem>())
+{
+    //var guessIsCorrect = item.Correct_Answer == item.Guess;
+
+    @*<p style="background-color: @(guessIsCorrect ? "limegreen" : "red")">*@
+    @*
+    <p>
+        @Html.Label("Question", item.Question)
+        <br/>
+        @Html.Label("Guess", item.Guess, new { @style = $"background-color:{(guessIsCorrect ? "limegreen" : "red")}" })
+    </p>
+    if(!guessIsCorrect)
+    {
+        @Html.Label("Correct_Answer", item.Correct_Answer)
+    }
+    *@
+    <ul style="list-style-type: none">
+        @($"{item.Index + 1}) ") @Html.Label("Question", item.Question)
+        @foreach(var choice in item.ShuffleAnswers())
+        {
+            var bgColor = choice == item.Correct_Answer
+                ? "limegreen"
+                : choice == item.Guess ? "red" : "white";
+            <li>
+                @*@Html.Label("choice", choice, new { @class="w-100", @style=$"background-color:{bgColor}" })*@
+                @Html.Label("choice", choice, new { @style=$"background-color:{bgColor}" })
+            </li>
+        }
+    </ul>
+    
+}

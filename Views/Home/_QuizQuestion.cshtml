@@ -1,0 +1,79 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using TriviaQuizMVC.Models
+@model TriviaQuizMVC.Models.QuizItem
+
+<style>
+    body {
+        font-size: 15px;
+        font-family: 'Poppins', sans-serif;
+        background-color: hsl(0, 0%, 98%);
+    }
+
+    h2 {
+        color: hsl(234, 12%, 34%);
+        font-weight: 600;
+    }
+</style>
+
+<div id="question-container" style="display:@(Model.CurrentActive ? "block" : "none")">
+    <h2>@Model.Category</h2>
+    <p>@Model.Question</p>
+
+    @Html.HiddenFor(m => Model.Index)
+
+    @{
+        var idx = 0;
+    }
+    @foreach (var ans in Model.ShuffleAnswers())
+    {
+        idx++;
+        <div class="row mx-auto my-3">
+            <input type="radio" class="choice w-auto" name="choice" value="@ans">
+            <label class="w-auto">@ans</label>
+        </div>
+    }
+
+    @Html.HiddenFor(m => Model.Guess)
+
+    <input id="correct-answer" type="text" value="@Model.Correct_Answer" hidden disabled>
+</div>
+
+<script>
+    (function () {
+        var radioInputs = document.querySelectorAll('.choice');
+
+        radioInputs.forEach(function (input) {
+            if (input.getAttribute('value') == document.getElementById('Guess').getAttribute('value'))
+                input.setAttribute('checked', '')
+
+            input.addEventListener('change', function () {
+                //var guess = this.value;
+                var guess = input.getAttribute('value');
+                document.getElementById('Guess').setAttribute('value', guess);
+
+                var idx = document.getElementById('Index').getAttribute('value');
+                handleChoiceSelection(idx, guess);
+            });
+        });
+    })();
+
+    function handleChoiceSelection(idx, selectedValue) {
+        // CONTROLLER'S PARAMS' NAMES MUST MATCH WITH DATA'S PROPERTIES' NAMES
+        var data = {
+            index: idx,
+            input: selectedValue,
+        };
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("TrackSelected", "Home")',
+            data: data,
+            success: function (result) {
+            },
+            error: function (error) {
+            }
+        });
+    }
+</script>
